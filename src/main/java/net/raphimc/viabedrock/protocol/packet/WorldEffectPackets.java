@@ -249,7 +249,7 @@ public final class WorldEffectPackets {
                     }
                 }
             }
-            final BedrockMappingData.JavaSound javaSound = BedrockProtocol.MAPPINGS.getBedrockToJavaSounds().get(configuredSound.sound());
+            final BedrockMappingData.JavaSound javaSound = BedrockProtocol.MAPPINGS.getJavaSoundForLevelSoundEvent(soundEvent, configuredSound.sound());
             if (javaSound == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock sound: " + configuredSound.sound());
                 wrapper.cancel();

@@ -1,0 +1,17 @@
+{
+  "break": {
+    "place.tuff": "minecraft:block.tuff.break",
+    "place.tuff_bricks": "minecraft:block.tuff_bricks.break"
+  },
+  "button.click_off": {
+    "random.stone_click": "minecraft:block.stone_button.click_off",
+    "random.wood_click": "minecraft:block.wooden_button.click_off"
+  },
+  "power.off": {
+    "random.stone_click": "minecraft:block.stone_button.click_off",
+    "random.wood_click": "minecraft:block.wooden_button.click_off"
+  },
+  "trapdoor.close": {
+    "open_trapdoor.copper": "minecraft:block.copper_trapdoor.close"
+  }
+}

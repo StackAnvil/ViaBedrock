@@ -143,6 +143,7 @@ public class BedrockMappingData extends MappingDataBase {
     private Map<String, Map<String, SoundDefinitions.ConfiguredSound>> bedrockLevelSoundEvents;
     private Map<NoteBlockInstrument, String> bedrockNoteBlockInstrumentSounds;
     private Map<String, JavaSound> bedrockToJavaSounds;
+    private Map<String, Map<String, JavaSound>> bedrockLevelSoundEventOverrides;
     private Map<String, JavaParticle> bedrockToJavaParticles;
     private Map<LevelEvent, LevelEventMapping> bedrockToJavaLevelEvents;
     private Map<ParticleType, JavaParticle> bedrockToJavaLevelEventParticles;
@@ -857,6 +858,32 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
 
+            final JsonObject soundEventOverridesJson = this.readJson("custom/sound_event_overrides.json");
+            this.bedrockLevelSoundEventOverrides = new HashMap<>(soundEventOverridesJson.size());
+            for (Map.Entry<String, JsonElement> eventEntry : soundEventOverridesJson.entrySet()) {
+                final String soundEvent = eventEntry.getKey();
+                final Map<String, SoundDefinitions.ConfiguredSound> eventSounds = this.bedrockLevelSoundEvents.get(soundEvent);
+                if (eventSounds == null) {
+                    throw new IllegalStateException("Unknown bedrock level sound event: " + soundEvent);
+                }
+                final JsonObject overridesJson = eventEntry.getValue().getAsJsonObject();
+                final Map<String, JavaSound> overrides = new HashMap<>(overridesJson.size());
+                for (Map.Entry<String, JsonElement> overrideEntry : overridesJson.entrySet()) {
+                    final String bedrockSound = overrideEntry.getKey();
+                    if (eventSounds.values().stream().noneMatch(sound -> sound.sound().equals(bedrockSound))) {
+                        throw new IllegalStateException("Sound " + bedrockSound + " is not used by level sound event " + soundEvent);
+                    }
+                    final String javaIdentifier = overrideEntry.getValue().getAsString();
+                    final Integer javaSoundId = this.javaSounds.get(javaIdentifier);
+                    if (javaSoundId == null) {
+                        throw new IllegalStateException("Unknown java sound: " + javaIdentifier);
+                    }
+                    final JavaSound defaultSound = this.bedrockToJavaSounds.get(bedrockSound);
+                    overrides.put(bedrockSound, new JavaSound(javaSoundId, javaIdentifier, defaultSound.category()));
+                }
+                this.bedrockLevelSoundEventOverrides.put(soundEvent, overrides);
+            }
+
             final JsonArray bedrockParticlesJson = this.readJson("bedrock/particles.json", JsonArray.class);
             final List<String> bedrockParticles = new ArrayList<>(bedrockParticlesJson.size());
             for (JsonElement particleJson : bedrockParticlesJson) {
@@ -1364,6 +1391,17 @@ public class BedrockMappingData extends MappingDataBase {
 
     public Map<String, JavaSound> getBedrockToJavaSounds() {
         return this.bedrockToJavaSounds;
+    }
+
+    public JavaSound getJavaSoundForLevelSoundEvent(final String soundEvent, final String bedrockSound) {
+        final Map<String, JavaSound> overrides = this.bedrockLevelSoundEventOverrides.get(soundEvent);
+        if (overrides != null) {
+            final JavaSound override = overrides.get(bedrockSound);
+            if (override != null) {
+                return override;
+            }
+        }
+        return this.bedrockToJavaSounds.get(bedrockSound);
     }
 
     public Map<String, JavaParticle> getBedrockToJavaParticles() {
