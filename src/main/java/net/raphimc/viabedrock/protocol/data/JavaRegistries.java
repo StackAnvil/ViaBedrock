@@ -20,7 +20,6 @@ package net.raphimc.viabedrock.protocol.data;
 import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.nbt.tag.ListTag;
 import com.viaversion.nbt.tag.StringTag;
-import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.resourcepack.definition.BiomeDefinitions;
@@ -29,6 +28,7 @@ import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.Dimension;
 import net.raphimc.viabedrock.protocol.data.generated.java.RegistryKeys;
+import net.raphimc.viabedrock.protocol.model.DimensionDefinition;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
@@ -62,13 +62,24 @@ public final class JavaRegistries {
             dimensionRegistry.getCompoundTag(Dimension.OVERWORLD.getKey()).putInt("height", 256);
             dimensionRegistry.getCompoundTag(Dimension.OVERWORLD.getKey()).putInt("logical_height", 256);
         }
-        for (Map.Entry<String, IntIntPair> entry : gameSession.getBedrockDimensionDefinitions().entrySet()) {
-            final CompoundTag dimensionTag = new CompoundTag();
-            final int height = entry.getValue().rightInt() - entry.getValue().leftInt();
-            dimensionTag.putInt("min_y", entry.getValue().leftInt());
-            dimensionTag.putInt("height", height);
-            dimensionTag.putInt("logical_height", height);
-            dimensionRegistry.getCompoundTag(entry.getKey()).putAll(dimensionTag);
+        for (Map.Entry<String, DimensionDefinition> entry : gameSession.getBedrockDimensionDefinitions().entrySet()) {
+            applyDimensionDefinition(dimensionRegistry.getCompoundTag(entry.getKey()), entry.getValue());
+        }
+    }
+
+    static void applyDimensionDefinition(final CompoundTag dimensionTag, final DimensionDefinition definition) {
+        dimensionTag.putInt("min_y", definition.minimumY());
+        dimensionTag.putInt("height", definition.height());
+        dimensionTag.putInt("logical_height", definition.height());
+        CompoundTag attributes = dimensionTag.getCompoundTag("attributes");
+        if (attributes == null) {
+            attributes = new CompoundTag();
+            dimensionTag.put("attributes", attributes);
+        }
+        attributes.putFloat("minecraft:visual/cloud_height", definition.cloudHeight());
+        if (!definition.renderClouds()) {
+            // Java's day timeline multiplies cloud color, preserving zero alpha.
+            attributes.putString("minecraft:visual/cloud_color", "#00ffffff");
         }
     }
 

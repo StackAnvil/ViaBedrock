@@ -23,7 +23,7 @@ The Java data generator and its setup steps are in [generator/README.md](generat
 
 ### data/bedrock/block_palette.nbt
 
-[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/50115039af4cd92e50545075d3a13eea6880cf88/core/src/main/resources/bedrock/block_palette.26_50.nbt)
+[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/a24ba9c8f07b38be6455e5e86d187a2ef2ffa6a8/core/src/main/resources/bedrock/block_palette.26_60.nbt)
 
 ### data/bedrock/block_sounds.json
 
@@ -61,7 +61,7 @@ This file has been generated using `./gradlew generateBedrockParticleList` from 
 
 ### data/bedrock/runtime_item_states.json
 
-[CloudburstMC/Data](https://github.com/CloudburstMC/Data/blob/a8a4341d7763d6eb8547cff3ca46b4153d60163d/runtime_item_states.json)
+[CloudburstMC/Data](https://github.com/GeyserMC/Geyser/blob/a24ba9c8f07b38be6455e5e86d187a2ef2ffa6a8/core/src/main/resources/bedrock/runtime_item_states.26_60.json)
 
 ### data/bedrock/sounds.json
 
@@ -110,3 +110,22 @@ These files have been generated using `./gradlew generateBedrockPacks` from the 
 ### skin_packs/*
 
 These files have been generated using `./gradlew generateBedrockPacks` from the official bedrock client's assets folder.
+
+### Bedrock 1.26.60 source snapshot
+
+The protocol update uses [Mojang protocol 2225 metadata](https://github.com/Mojang/bedrock-protocol-docs/releases/tag/v1.26.60).
+Client resources come from the [1.26.60.5 GDK archive](https://github.com/bubbles-wow/mcbe-gdk-unpack-archive/releases/tag/1.26.60.5).
+The archive SHA-256 is `a36945ad3b28d762d31d4533168a102294b55e8f88fe2c570485493fb3d15f08`.
+The resource generators use its non-empty original files and unpacked archives.
+Particle identifiers include compiled definitions with formats 1.26.10, 1.26.30, and 1.26.50.
+
+The palette keeps state version 1.21.60.33 while adding connection properties to redstone, fire, and chorus plants.
+The connection upgrade adds missing properties and preserves explicit values at that unchanged version.
+New experimental blocks, entities, particles, and sounds use Java shape or type fallbacks where direct equivalents are absent.
+These fallbacks do not establish complete behavior or visual parity for the experimental features.
+
+The entity registry retains the stable 26.60.6 BDS table captured through an offline NetherNet bootstrap.
+It adds `minecraft:ice_ball` with numeric ID 156 to the previous stable table.
+The generated experimental sound table also requires `minecraft:frostbite`.
+Its identifier, spawn egg, and numeric ID 155 come from the matching client definition and `ActorType` metadata.
+The Frostbite entry is a curated experimental addition, not part of the default server registry capture.

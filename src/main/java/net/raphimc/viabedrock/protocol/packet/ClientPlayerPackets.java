@@ -621,6 +621,7 @@ public final class ClientPlayerPackets {
             wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // entity runtime id
             wrapper.write(BedrockTypes.FLOAT_LE, 0F); // data
             wrapper.write(BedrockTypes.OPTIONAL_STRING, ActorSwingSource.Attack.name().toLowerCase(Locale.ROOT)); // swing source // TODO: 1.21.130
+            wrapper.write(Types.UNSIGNED_BYTE, (short) HandSlot.Mainhand.getValue()); // hand
 
             if (clientPlayer.blockBreakingInfo() != null) {
                 if (!gameSession.isBlockBreakingServerAuthoritative()) {

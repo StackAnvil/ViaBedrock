@@ -26,6 +26,8 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 public final class UnhandledPackets {
 
     public static void register(final BedrockProtocol protocol) {
+        protocol.cancelClientbound(ClientboundBedrockPackets.SET_PASSENGER_OF_BLOCK); // Block seating has no Java counterpart yet
+        protocol.cancelClientbound(ClientboundBedrockPackets.PLAY_AUDIO_CONTENT); // Signed audio content requires the Bedrock content service
         protocol.cancelClientbound(ClientboundBedrockPackets.SET_HEALTH); // Seems to do nothing meaningful
         protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA); // Not relevant (Education Edition)
         protocol.cancelClientbound(ClientboundBedrockPackets.PHOTO_TRANSFER); // Not relevant (Education Edition)

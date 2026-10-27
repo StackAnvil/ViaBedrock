@@ -155,8 +155,7 @@ public final class ResourcePackPackets {
 
             if (loadStateTracker == null || !loadStateTracker.hasJavaClientAccepted()) {
                 final PacketWrapper resourcePackClientResponse = wrapper.create(ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE);
-                resourcePackClientResponse.write(BedrockTypes.UNSIGNED_VAR_INT, ResourcePackResponse.ResourcePackStackFinished.getValue()); // status
-                resourcePackClientResponse.write(BedrockTypes.STRING, "resourcepackstackfinished"); // #blameMojang
+                ResourcePackClientResponse.write(resourcePackClientResponse, ResourcePackResponse.ResourcePackStackFinished);
                 resourcePackClientResponse.sendToServer(BedrockProtocol.class);
             }
         });
@@ -213,17 +212,14 @@ public final class ResourcePackPackets {
                     if (resourcePackStorage != null) {
                         resourcePackStorage.setLoadedOnJavaClient();
                     }
-                    wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ResourcePackResponse.ResourcePackStackFinished.getValue()); // status
-                    wrapper.write(BedrockTypes.STRING, "resourcepackstackfinished"); // #blameMojang
+                    ResourcePackClientResponse.write(wrapper, ResourcePackResponse.ResourcePackStackFinished);
                 }
                 case FAILED_DOWNLOAD, FAILED_RELOAD, DISCARDED -> {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Client resource pack download/load failed");
-                    wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ResourcePackResponse.ResourcePackStackFinished.getValue()); // status
-                    wrapper.write(BedrockTypes.STRING, "resourcepackstackfinished"); // #blameMojang
+                    ResourcePackClientResponse.write(wrapper, ResourcePackResponse.ResourcePackStackFinished);
                 }
                 case DECLINED, INVALID_URL -> {
-                    wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ResourcePackResponse.DownloadingFinished.getValue()); // status
-                    wrapper.write(BedrockTypes.STRING, "downloadingfinished"); // #blameMojang
+                    ResourcePackClientResponse.write(wrapper, ResourcePackResponse.DownloadingFinished);
                 }
                 case ACCEPTED -> {
                     final ResourcePackLoadStateTracker loadStateTracker = wrapper.user().get(ResourcePackLoadStateTracker.class);
@@ -232,16 +228,14 @@ public final class ResourcePackPackets {
                         loadStateTracker.setJavaClientAccepted();
                         loadStateTracker.loadRequestedResourcePacks().thenAccept(v -> {
                             final PacketWrapper resourcePackClientResponse = PacketWrapper.create(ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE, wrapper.user());
-                            resourcePackClientResponse.write(BedrockTypes.UNSIGNED_VAR_INT, ResourcePackResponse.DownloadingFinished.getValue()); // status
-                            resourcePackClientResponse.write(BedrockTypes.STRING, "downloadingfinished"); // #blameMojang
+                            ResourcePackClientResponse.write(resourcePackClientResponse, ResourcePackResponse.DownloadingFinished);
                             resourcePackClientResponse.scheduleSendToServer(BedrockProtocol.class);
                         }).exceptionally(e -> {
                             BedrockProtocol.kickForIllegalState(wrapper.user(), "One of the server resource packs failed to load. Try again later or decline the resource packs.", e);
                             return null;
                         });
                     } else {
-                        wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ResourcePackResponse.DownloadingFinished.getValue()); // status
-                        wrapper.write(BedrockTypes.STRING, "downloadingfinished"); // #blameMojang
+                        ResourcePackClientResponse.write(wrapper, ResourcePackResponse.DownloadingFinished);
                     }
                 }
                 case DOWNLOADED -> wrapper.cancel();

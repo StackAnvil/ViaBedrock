@@ -30,11 +30,12 @@ public class EntityDataType extends EntityDataTypeTemplate {
         final int index = BedrockTypes.UNSIGNED_VAR_INT.read(buffer); // id
         final int rawDataItemType = BedrockTypes.UNSIGNED_VAR_INT.read(buffer); // oneOf
         final int typev2 = buffer.readByte(); // type
-        if (rawDataItemType != typev2) { // #blameMojang
+        // Cereal carries both the variant index and the data item type byte.
+        if (rawDataItemType != typev2) {
             throw new IllegalStateException("DataItemType mismatch: " + rawDataItemType + " != " + typev2);
         }
-        final DataItemType dataItemType = DataItemType.getByValue(rawDataItemType, DataItemType.Unknown);
-        if (dataItemType == DataItemType.Unknown) { // Bedrock client disconnects if the data item type is not valid
+        final DataItemType dataItemType = DataItemType.getByValue(rawDataItemType);
+        if (dataItemType == null) { // Bedrock client disconnects if the data item type is not valid
             throw new IllegalStateException("Unknown DataItemType: " + rawDataItemType);
         }
         final EntityDataTypesBedrock type = EntityDataTypesBedrock.byDataItemType(dataItemType);

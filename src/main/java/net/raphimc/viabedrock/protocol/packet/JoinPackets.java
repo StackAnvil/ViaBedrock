@@ -31,7 +31,6 @@ import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.libs.fastutil.ints.IntIntImmutablePair;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
 import com.viaversion.viaversion.protocols.base.v1_7.ClientboundBaseProtocol1_7;
 import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundConfigurationPackets26_3;
@@ -55,6 +54,7 @@ import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.PlayerInfoUpdateAction;
 import net.raphimc.viabedrock.protocol.data.generated.java.Attributes;
+import net.raphimc.viabedrock.protocol.model.DimensionDefinition;
 import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
@@ -230,6 +230,7 @@ public final class JoinPackets {
                 final EditorWorldType editorWorldType = EditorWorldType.getByValue(wrapper.read(BedrockTypes.VAR_INT)); // world editor type
                 wrapper.read(Types.BOOLEAN); // created in world editor
                 wrapper.read(Types.BOOLEAN); // exported from world editor
+                wrapper.read(Types.BYTE); // editor level migration version
                 final int currentTime = wrapper.read(BedrockTypes.VAR_INT); // day cycle stop time
                 wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // education edition offers
                 wrapper.read(Types.BOOLEAN); // education features enabled
@@ -433,14 +434,9 @@ public final class JoinPackets {
                 final int count = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // entry count
                 for (int i = 0; i < count; i++) {
                     final String dimensionIdentifier = wrapper.read(BedrockTypes.STRING); // dimension identifier
-                    final int minimumHeight = wrapper.read(BedrockTypes.VAR_INT); // minimum height
-                    final int maximumHeight = minimumHeight + wrapper.read(BedrockTypes.VAR_INT); // maximum height
-                    wrapper.read(BedrockTypes.VAR_INT); // generator type
-                    wrapper.read(BedrockTypes.VAR_INT); // dimension type
-                    wrapper.read(BedrockTypes.UUID); // pack id
-                    wrapper.read(BedrockTypes.STRING); // default biome
-                    if (dimensionIdentifier.equals(Dimension.OVERWORLD.getKey())) { // Bedrock client currently only supports overworld
-                        gameSession.putBedrockDimensionDefinition(dimensionIdentifier, new IntIntImmutablePair(minimumHeight, maximumHeight));
+                    final DimensionDefinition definition = readDimensionDefinition(wrapper);
+                    if (dimensionIdentifier.equals(Dimension.OVERWORLD.getKey())) { // Only Overworld overrides currently map to Java
+                        gameSession.putBedrockDimensionDefinition(dimensionIdentifier, definition);
                     }
                 }
             }, State.PLAY, (PacketHandler) PacketWrapper::cancel // Bedrock client ignores dimension data after start game
@@ -631,6 +627,18 @@ public final class JoinPackets {
         final PacketWrapper setTime = PacketWrapper.create(ClientboundBedrockPackets.SET_TIME, user);
         setTime.write(BedrockTypes.VAR_INT, joinGameStorage.currentTime()); // time of day
         setTime.send(BedrockProtocol.class, false);
+    }
+
+    static DimensionDefinition readDimensionDefinition(final PacketWrapper wrapper) {
+        final int minimumY = wrapper.read(BedrockTypes.VAR_INT);
+        final int heightRange = wrapper.read(BedrockTypes.VAR_INT);
+        wrapper.read(BedrockTypes.VAR_INT); // generator type
+        wrapper.read(BedrockTypes.VAR_INT); // dimension type
+        wrapper.read(BedrockTypes.UUID); // pack id
+        wrapper.read(BedrockTypes.STRING); // default biome
+        final int cloudHeight = wrapper.read(BedrockTypes.VAR_INT);
+        final boolean renderClouds = wrapper.read(Types.BOOLEAN);
+        return new DimensionDefinition(minimumY, heightRange, cloudHeight, renderClouds);
     }
 
     private JoinPackets() {

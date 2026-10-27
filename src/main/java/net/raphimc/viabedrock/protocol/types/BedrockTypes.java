@@ -79,6 +79,8 @@ public final class BedrockTypes {
     public static final Type<GameRule[]> GAME_RULE_ARRAY = new ArrayType<>(GAME_RULE, UNSIGNED_VAR_INT);
     public static final Type<Experiment> EXPERIMENT = new ExperimentType();
     public static final Type<Experiment[]> EXPERIMENT_ARRAY = new ArrayType<>(EXPERIMENT, UNSIGNED_INT_LE);
+    public static final Type<PassengerOfBlock> PASSENGER_OF_BLOCK = new PassengerOfBlockType();
+    public static final Type<PassengerOfBlock> OPTIONAL_PASSENGER_OF_BLOCK = new OptionalType<>(PASSENGER_OF_BLOCK);
     public static final Type<EducationUriResource> EDUCATION_URI_RESOURCE = new EducationUriResourceType();
     public static final Type<BlockProperties> BLOCK_PROPERTIES = new BlockPropertiesType();
     public static final Type<BlockProperties[]> BLOCK_PROPERTIES_ARRAY = new ArrayType<>(BLOCK_PROPERTIES, UNSIGNED_VAR_INT);

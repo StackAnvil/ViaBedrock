@@ -288,6 +288,7 @@ public final class WorldPackets {
             final boolean cachingEnabled = wrapper.read(Types.BOOLEAN); // caching enabled
             final Long[] blobs = wrapper.read(BedrockTypes.LONG_ARRAY); // blob ids (always present in 1.26.40)
             final byte[] data = wrapper.read(BedrockTypes.BYTE_ARRAY); // data
+            wrapper.read(Types.BOOLEAN); // server biome data overrides client biome data
             if (cachingEnabled) {
                 final int expectedLength = requestSubChunks ? 1 : sectionCount + 1;
                 if (blobs.length != expectedLength) {

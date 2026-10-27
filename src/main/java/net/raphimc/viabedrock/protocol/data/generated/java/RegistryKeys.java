@@ -4,6 +4,7 @@ package net.raphimc.viabedrock.protocol.data.generated.java;
 public class RegistryKeys {
 
     public static final String BANNER_PATTERN = "minecraft:banner_pattern";
+    public static final String BLOCK_TRANSFORMER = "minecraft:block_transformer";
     public static final String CAT_SOUND_VARIANT = "minecraft:cat_sound_variant";
     public static final String CAT_VARIANT = "minecraft:cat_variant";
     public static final String CHAT_TYPE = "minecraft:chat_type";
@@ -12,6 +13,7 @@ public class RegistryKeys {
     public static final String COW_SOUND_VARIANT = "minecraft:cow_sound_variant";
     public static final String COW_VARIANT = "minecraft:cow_variant";
     public static final String DAMAGE_TYPE = "minecraft:damage_type";
+    public static final String DECORATED_POT_PATTERN = "minecraft:decorated_pot_pattern";
     public static final String DIALOG = "minecraft:dialog";
     public static final String DIMENSION_TYPE = "minecraft:dimension_type";
     public static final String ENCHANTMENT = "minecraft:enchantment";
@@ -31,6 +33,7 @@ public class RegistryKeys {
     public static final String WOLF_VARIANT = "minecraft:wolf_variant";
     public static final String WORLD_CLOCK = "minecraft:world_clock";
     public static final String WORLDGEN_BIOME = "minecraft:worldgen/biome";
+    public static final String WORLDGEN_BLOCK_STATE_PROVIDER = "minecraft:worldgen/block_state_provider";
     public static final String ZOMBIE_NAUTILUS_VARIANT = "minecraft:zombie_nautilus_variant";
 
 }

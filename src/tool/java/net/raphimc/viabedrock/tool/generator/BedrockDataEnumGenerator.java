@@ -30,7 +30,13 @@ import net.raphimc.viabedrock.tool.ToolPaths;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Stream;
 
 public final class BedrockDataEnumGenerator {
@@ -50,8 +56,11 @@ public final class BedrockDataEnumGenerator {
             throw new IllegalStateException("No enum definitions found in " + jsonDir);
         }
 
+        final List<JsonObject> definitions = new ArrayList<>();
         for (Path file : jsonFiles) {
-            final JsonObject jsonObject = gson.fromJson(Files.readString(file), JsonObject.class);
+            definitions.add(gson.fromJson(Files.readString(file), JsonObject.class));
+        }
+        for (JsonObject jsonObject : definitions) {
 
             if (!jsonObject.has("enum")) {
                 continue;
@@ -135,11 +144,55 @@ public final class BedrockDataEnumGenerator {
 
                 genEnum.enumFields().add(new Field(name, null, null, value, new Javadoc()));
             }
+            if (enumName.equals("MinecraftPacketIds")) {
+                missingPacketIds(jsonObject, definitions).forEach((name, value) ->
+                    genEnum.enumFields().add(new Field(name, null, null, Integer.toString(value), new Javadoc())));
+            }
             codeGen.addType(genEnum);
         }
 
         codeGen.generate();
         System.out.println("Generated " + jsonFiles.size() + " enums from " + jsonDir);
+    }
+
+    static Map<String, Integer> missingPacketIds(final JsonObject packetEnum, final List<JsonObject> definitions) {
+        final JsonArray names = packetEnum.getAsJsonArray("enum");
+        final JsonArray values = packetEnum.getAsJsonArray("x-enum-binary-value");
+        if (values == null || values.size() != names.size()) {
+            throw new IllegalStateException("Packet IDs require an explicit value for every enum entry");
+        }
+        final Map<String, Integer> namedIds = new LinkedHashMap<>();
+        final Set<Integer> enumIds = new HashSet<>();
+        for (int i = 0; i < names.size(); i++) {
+            namedIds.put(names.get(i).getAsString(), values.get(i).getAsInt());
+            enumIds.add(values.get(i).getAsInt());
+        }
+        final Map<Integer, String> schemaIds = new TreeMap<>();
+        for (JsonObject definition : definitions) {
+            final JsonObject properties = definition.getAsJsonObject("$metaProperties");
+            if (properties == null || !properties.has("[cereal:packet]")) {
+                continue;
+            }
+            if (!packetEnum.get("x-protocol-version").equals(definition.get("x-protocol-version"))) {
+                throw new IllegalStateException("Packet schemas and enum must target the same protocol");
+            }
+            final String name = definition.get("title").getAsString();
+            final int id = properties.get("[cereal:packet]").getAsInt();
+            final String previous = schemaIds.putIfAbsent(id, name);
+            if (previous != null && !previous.equals(name)) {
+                throw new IllegalStateException("Conflicting packet schemas for ID " + id);
+            }
+            if (namedIds.containsKey(name) && namedIds.get(name) != id) {
+                throw new IllegalStateException("Conflicting packet ID for " + name);
+            }
+        }
+        final Map<String, Integer> missing = new LinkedHashMap<>();
+        schemaIds.forEach((id, name) -> {
+            if (!enumIds.contains(id)) {
+                missing.put(name, id);
+            }
+        });
+        return missing;
     }
 
     private BedrockDataEnumGenerator() {
