@@ -21,10 +21,9 @@ import com.vdurmont.semver4j.Semver;
 import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.libs.fastutil.ints.IntIntImmutablePair;
-import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.model.DimensionDefinition;
 import net.raphimc.viabedrock.protocol.data.JavaRegistries;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ChatRestrictionLevel;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.GameType;
@@ -38,7 +37,7 @@ public class GameSessionStorage extends StoredObject {
 
     private CompoundTag javaRegistries;
     private CompoundTag bedrockBiomeDefinitions = BedrockProtocol.MAPPINGS.getBedrockBiomeDefinitions();
-    private final Map<String, IntIntPair> bedrockDimensionDefinitions = new HashMap<>();
+    private final Map<String, DimensionDefinition> bedrockDimensionDefinitions = new HashMap<>();
     private final Set<String> availableEntityIdentifiers = new HashSet<>(BedrockProtocol.MAPPINGS.getBedrockEntities().keySet());
     private Semver bedrockVanillaVersion;
     private boolean flatGenerator;
@@ -57,7 +56,7 @@ public class GameSessionStorage extends StoredObject {
     public GameSessionStorage(final UserConnection user) {
         super(user);
 
-        this.bedrockDimensionDefinitions.put("minecraft:the_nether", new IntIntImmutablePair(0, 128));
+        this.bedrockDimensionDefinitions.put("minecraft:the_nether", new DimensionDefinition(0, 128, 0, false));
     }
 
     public CompoundTag getJavaRegistries() {
@@ -76,11 +75,11 @@ public class GameSessionStorage extends StoredObject {
         this.javaRegistries = null;
     }
 
-    public Map<String, IntIntPair> getBedrockDimensionDefinitions() {
+    public Map<String, DimensionDefinition> getBedrockDimensionDefinitions() {
         return this.bedrockDimensionDefinitions;
     }
 
-    public void putBedrockDimensionDefinition(final String dimensionIdentifier, final IntIntPair dimensionDefinition) {
+    public void putBedrockDimensionDefinition(final String dimensionIdentifier, final DimensionDefinition dimensionDefinition) {
         this.bedrockDimensionDefinitions.put(dimensionIdentifier, dimensionDefinition);
         this.javaRegistries = null;
     }
