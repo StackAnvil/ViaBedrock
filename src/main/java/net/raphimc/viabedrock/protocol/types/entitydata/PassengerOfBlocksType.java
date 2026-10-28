@@ -34,11 +34,11 @@ public class PassengerOfBlocksType extends Type<PassengerOfBlocks> {
     @Override
     public PassengerOfBlocks read(final ByteBuf buffer) {
 
-        BlockPosition position = BedrockTypes.BLOCK_POSITION.read(buffer);
-        Position3f offset = BedrockTypes.POSITION_3F.read(buffer);
-        float rotation = BedrockTypes.FLOAT_LE.read(buffer);
-        float rotationLimit = BedrockTypes.FLOAT_LE.read(buffer);
-        PassengerOfBlockArguments_EmoteType emote = PassengerOfBlockArguments_EmoteType.getByValue(buffer.readByte());
+        final BlockPosition position = BedrockTypes.BLOCK_POSITION.read(buffer);
+        final Position3f offset = BedrockTypes.POSITION_3F.read(buffer);
+        final float rotation = BedrockTypes.FLOAT_LE.read(buffer);
+        final float rotationLimit = BedrockTypes.FLOAT_LE.read(buffer);
+        final PassengerOfBlockArguments_EmoteType emote = PassengerOfBlockArguments_EmoteType.getByValue(buffer.readByte());
 
         return new PassengerOfBlocks(position, offset, rotation, rotationLimit, emote);
     }

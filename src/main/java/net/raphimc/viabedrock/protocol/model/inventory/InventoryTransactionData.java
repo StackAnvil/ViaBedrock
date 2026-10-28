@@ -69,7 +69,7 @@ public interface InventoryTransactionData {
         BedrockItem itemInHand,
         Position3f headPosition,
         HandSlot handSlot
-        ) implements InventoryTransactionData {
+    ) implements InventoryTransactionData {
     }
 
 }
