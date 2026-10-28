@@ -27,9 +27,8 @@ import net.raphimc.viabedrock.api.resourcepack.content.ZipContent;
 import net.raphimc.viabedrock.api.resourcepack.http.BedrockPackDownloader;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ResourcePackResponse;
+import net.raphimc.viabedrock.protocol.packet.ResourcePackClientResponse;
 import net.raphimc.viabedrock.protocol.provider.ResourcePackProvider;
-import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.net.URL;
 import java.util.*;
@@ -132,9 +131,7 @@ public class ResourcePackLoadStateTracker extends StoredObject {
             if (!downloadList.isEmpty()) {
                 ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Downloading " + downloadList.size() + " resource packs over the game protocol");
                 final PacketWrapper resourcePackClientResponse = PacketWrapper.create(ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE, this.user());
-                resourcePackClientResponse.write(BedrockTypes.UNSIGNED_VAR_INT, ResourcePackResponse.Downloading.getValue()); // status
-                resourcePackClientResponse.write(BedrockTypes.STRING, "downloading"); // #blameMojang
-                resourcePackClientResponse.write(BedrockTypes.STRING_ARRAY, downloadList.stream().map(ResourcePack.Key::toString).toArray(String[]::new)); // downloading packs
+                ResourcePackClientResponse.writeDownloading(resourcePackClientResponse, downloadList.stream().map(ResourcePack.Key::toString).toArray(String[]::new));
                 resourcePackClientResponse.scheduleSendToServer(BedrockProtocol.class);
             } else {
                 this.loadFuture.complete(null);
