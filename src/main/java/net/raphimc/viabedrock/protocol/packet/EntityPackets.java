@@ -606,7 +606,7 @@ public final class EntityPackets {
             final long entityRuntimeId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
             wrapper.read(BedrockTypes.FLOAT_LE); // data
             wrapper.read(BedrockTypes.OPTIONAL_STRING); // swing source
-            HandSlot hand = HandSlot.getByValue(wrapper.read(Types.BYTE), HandSlot.Mainhand); // hand
+            final HandSlot hand = HandSlot.getByValue(wrapper.read(Types.BYTE), HandSlot.Mainhand); // hand
 
             final Entity entity = wrapper.user().get(EntityTracker.class).getEntityByRid(entityRuntimeId);
             if (entity == null) {
