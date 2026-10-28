@@ -76,6 +76,9 @@ public final class OtherPlayerPackets {
             wrapper.read(BedrockTypes.ENTITY_PROPERTIES); // entity properties
             final PlayerAbilities abilities = wrapper.read(BedrockTypes.PLAYER_ABILITIES); // abilities
             wrapper.read(BedrockTypes.ENTITY_LINK_ARRAY); // entity links
+            wrapper.read(BedrockTypes.OPTIONAL_PASSENGER_OF_BLOCKS); // passenger of blocks
+            wrapper.read(BedrockTypes.STRING); // device id
+            wrapper.read(BedrockTypes.INT_LE); // build platform
 
             final PlayerEntity entity = entityTracker.addEntity(new PlayerEntity(wrapper.user(), entityRuntimeId, entityTracker.getNextJavaEntityId(), uuid, abilities));
             entity.setPosition(position);

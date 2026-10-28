@@ -79,6 +79,7 @@ public final class HudPackets {
                         final long entityUniqueId = wrapper.read(BedrockTypes.VAR_LONG); // actorUniqueId
                         final String name = wrapper.read(BedrockTypes.STRING); // name
                         final String xuid = wrapper.read(BedrockTypes.STRING); // xuid
+                        final String skinPlayFabId = wrapper.read(BedrockTypes.STRING); // skin playfab id
                         final String platformOnlineId = wrapper.read(BedrockTypes.STRING); // platform online id
                         final int deviceOs = wrapper.read(BedrockTypes.INT_LE); // device os
                         final SkinData skin = wrapper.read(BedrockTypes.SKIN); // skin
@@ -97,6 +98,7 @@ public final class HudPackets {
                         }));
 
                         Via.getManager().getProviders().get(SkinProvider.class).setSkin(wrapper.user(), uuid, skin);
+                        // TODO: Update skin playFabId
 
                         final Pair<Long, String> entry = playerListStorage.addPlayer(uuid, entityUniqueId, name);
                         if (entry != null) {

@@ -217,6 +217,7 @@ public enum MinecraftPacketIds {
     PlayerVideoCapturePacket(324),
     PlayerUpdateEntityOverridesPacket(325),
     PlayerLocation(326),
+    VoxelShapes(337),
     SyncWorldClocks(344),
     SendPartyDestinationCookie(349),
     PartyDestinationCookieResponse(350),

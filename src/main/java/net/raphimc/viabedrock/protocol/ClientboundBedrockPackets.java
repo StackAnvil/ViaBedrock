@@ -186,7 +186,7 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     PLAYER_LOCATION(MinecraftPacketIds.PlayerLocation.getValue()),
     //CAMERA_SPLINE(MinecraftPacketIds.CameraSplinePacket.getValue()),
     SYNC_WORLD_CLOCKS(MinecraftPacketIds.SyncWorldClocks.getValue()),
-    //VOXEL_SHAPES(MinecraftPacketIds.VoxelShapesPacket.getValue()),
+    VOXEL_SHAPES(MinecraftPacketIds.VoxelShapes.getValue()),
     SET_PLAYER_FURNACE_OPTIONS(MinecraftPacketIds.SetPlayerFurnaceOptions.getValue()),
     RECORD_STARTED(MinecraftPacketIds.RecordStarted.getValue());
     //STONECUTTER_SET_RECIPE(MinecraftPacketIds.ClientboundStonecutterSetRecipePacket.getValue());
