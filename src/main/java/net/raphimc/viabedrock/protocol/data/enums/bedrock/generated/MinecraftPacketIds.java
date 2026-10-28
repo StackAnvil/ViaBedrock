@@ -135,6 +135,7 @@ public enum MinecraftPacketIds {
     SettingsCommandPacket(140),
     AnvilDamage(141),
     CompletedUsingItem(142),
+    ServerboundCursorItemDrag(358),
     NetworkSettings(143),
     PlayerAuthInputPacket(144),
     CreativeContent(145),
@@ -216,17 +217,15 @@ public enum MinecraftPacketIds {
     PlayerVideoCapturePacket(324),
     PlayerUpdateEntityOverridesPacket(325),
     PlayerLocation(326),
-    VoxelShapesPacket(337),
-    CameraSplinePacket(338),
     SyncWorldClocks(344),
     SendPartyDestinationCookie(349),
     PartyDestinationCookieResponse(350),
     SetPlayerFurnaceOptions(351),
     RecordStarted(352),
     ClientboundMatchmakingState(353),
-    ServerboundStonecutterSetRecipePacket(354),
-    ClientboundStonecutterSetRecipePacket(355),
     ServerboundMatchmakingCancel(356),
+    ClientboundPlayAudioContent(359),
+    ServerboundRegisterAudioContent(360),
     ;
 
     private static final Int2ObjectMap<MinecraftPacketIds> BY_VALUE = new Int2ObjectOpenHashMap<>();

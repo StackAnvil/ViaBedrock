@@ -33,10 +33,7 @@ public class EntityDataType extends EntityDataTypeTemplate {
         if (rawDataItemType != typev2) { // #blameMojang
             throw new IllegalStateException("DataItemType mismatch: " + rawDataItemType + " != " + typev2);
         }
-        final DataItemType dataItemType = DataItemType.getByValue(rawDataItemType, DataItemType.Unknown);
-        if (dataItemType == DataItemType.Unknown) { // Bedrock client disconnects if the data item type is not valid
-            throw new IllegalStateException("Unknown DataItemType: " + rawDataItemType);
-        }
+        final DataItemType dataItemType = DataItemType.getByValue(rawDataItemType);
         final EntityDataTypesBedrock type = EntityDataTypesBedrock.byDataItemType(dataItemType);
         return new EntityData(index, type, type.type().read(buffer));
     }
