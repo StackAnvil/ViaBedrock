@@ -57,6 +57,10 @@ repositories {
     }
 }
 
+configurations {
+    testImplementation.extendsFrom compileOnly
+}
+
 dependencies {
     compileOnly "com.viaversion:viaversion-common:5.12.0"
     compileOnly "org.yaml:snakeyaml:2.7"
@@ -98,9 +102,18 @@ dependencies {
         transitive = false
     }
 
+    testImplementation "org.junit.jupiter:junit-jupiter:6.1.3"
+    testImplementation "org.mockito:mockito-core:5.24.0"
+    testImplementation sourceSets.tool.output
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:6.1.3"
+
     toolImplementation "org.jsoup:jsoup:1.23.2"
     toolImplementation "org.ow2.asm:asm-tree:9.11.1"
     toolImplementation "net.lenni0451.commons:asm:1.9.2"
+}
+
+test {
+    useJUnitPlatform()
 }
 
 def registerToolTask(String name, String toolMainClass, String toolDescription) {
