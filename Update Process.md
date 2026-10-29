@@ -92,6 +92,9 @@ Proposals come from three strategies, and the report says which one produced eac
 3. Update manual enums.
 4. Extract the client resource packs with [brarchive-extractor](https://github.com/LPaicen/brarchive-extractor). The tools read the extracted packs from `run/client-data/resource_packs_unpacked` by
    default.
+   Use matching [BDS schemas](https://github.com/bedrock-apis/bds-docs) or a client schema export to decode compiled MCB resources.
+   Pass the schema directory with `--schema=/path/to/schemas`.
+   Keep the extracted `__brarchive` directories inside each pack. The pack generator merges their definitions into the pack root.
 5. Update `assets/viabedrock/data` (see `Data Asset Sources.md`) and `BedrockMappingData`.
    `./gradlew generateBedrockSoundLists` and `./gradlew generateBedrockParticleList` generate the sound and particle files from the client. New block state upgrade schemas are applied to the mappings
    with

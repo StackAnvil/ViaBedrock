@@ -65,21 +65,7 @@ public final class BedrockPacksGenerator {
             packKeys.add(readPackKey(new File(packDir, "manifest.json")));
 
             final File outputFile = new File(resourcePacksOutputDir, packDir.getName() + ".mcpack");
-
-            try (FileSystem fs = FileSystems.newFileSystem(new URI("jar:" + outputFile.toURI()), Map.of("create", "true"))) {
-                final Path fsRoot = fs.getRootDirectories().iterator().next();
-
-                addLicense(fsRoot);
-                copyFileIfExists(packDir, fsRoot, "manifest.json");
-                copyFileIfExists(packDir, fsRoot, "texts/en_US.lang");
-                copyFileIfExists(packDir, fsRoot, "font/glyph_E0.png");
-                copyFileIfExists(packDir, fsRoot, "font/glyph_E1.png");
-                copyFolder(packDir, fsRoot, "biomes");
-                copyFolder(packDir, fsRoot, "fogs");
-                copyFolder(packDir, fsRoot, "render_controllers");
-
-                removeTimestamps(fsRoot);
-            }
+            writeResourcePack(packDir, outputFile.toPath());
         }
 
         final File skinPacksOutputDir = ToolPaths.SKIN_PACKS.toFile();
@@ -93,6 +79,23 @@ public final class BedrockPacksGenerator {
         }
 
         reportMissingPackKeys(packKeys);
+    }
+
+    static void writeResourcePack(final File packDir, final Path outputFile) throws IOException {
+        try (FileSystem fs = FileSystems.newFileSystem(URI.create("jar:" + outputFile.toUri()), Map.of("create", "true"))) {
+            final Path fsRoot = fs.getRootDirectories().iterator().next();
+
+            addLicense(fsRoot);
+            copyFileIfExists(packDir, fsRoot, "manifest.json");
+            copyFileIfExists(packDir, fsRoot, "texts/en_US.lang");
+            copyFileIfExists(packDir, fsRoot, "font/glyph_E0.png");
+            copyFileIfExists(packDir, fsRoot, "font/glyph_E1.png");
+            copyFolder(packDir, fsRoot, "biomes");
+            copyFolder(packDir, fsRoot, "fogs");
+            copyFolder(packDir, fsRoot, "render_controllers");
+
+            removeTimestamps(fsRoot);
+        }
     }
 
     /**
@@ -153,22 +156,23 @@ public final class BedrockPacksGenerator {
     }
 
     private static void copyFolder(final File packDir, final Path targetRoot, final String folderPath) throws IOException {
-        final File folder = new File(packDir, folderPath);
-        if (folder.exists()) {
+        // Direct definitions take precedence when both layouts contain the same path.
+        for (File folder : List.of(new File(packDir, folderPath), new File(packDir, "__brarchive/" + folderPath))) {
+            if (!folder.isDirectory()) {
+                continue;
+            }
             final Path sourcePath = folder.toPath();
             final Path targetPath = targetRoot.resolve(folderPath);
-            Files.walk(sourcePath).forEach(path -> {
-                try {
+            try (Stream<Path> paths = Files.walk(sourcePath)) {
+                for (Path path : paths.toList()) {
                     final Path resolvedTargetPath = targetPath.resolve(sourcePath.relativize(path).toString());
                     if (Files.isDirectory(path)) {
                         Files.createDirectories(resolvedTargetPath);
-                    } else {
+                    } else if (!Files.exists(resolvedTargetPath)) {
                         Files.copy(path, resolvedTargetPath);
                     }
-                } catch (final IOException e) {
-                    e.printStackTrace();
                 }
-            });
+            }
         }
     }
 
